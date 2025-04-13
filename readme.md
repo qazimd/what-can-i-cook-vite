@@ -9,6 +9,7 @@ A simple AI-powered web app built with React + Vite that helps users discover re
 - 📌 Recent input history (last 5 entries stored per session)
 - 💬 Chatbot assistant ("ChefBot") to ask follow-up cooking questions
 - 🌐 Clean and responsive TailwindCSS UI
+- 🔒 Secure backend using Netlify Functions with basic rate limiting
 
 ## 🚀 Live Demo
 Coming soon (after Netlify deployment)
@@ -16,6 +17,7 @@ Coming soon (after Netlify deployment)
 ## 🛠️ Tech Stack
 - React (with Vite)
 - TailwindCSS
+- Netlify Functions
 - Cohere API
 
 ## 📦 Setup Instructions
@@ -33,37 +35,52 @@ npm install
 
 3. **Create `.env` file in the root:**
 ```env
-VITE_COHERE_API_KEY=your_cohere_api_key_here
+COHERE_API_KEY=your_cohere_api_key_here
 ```
 
-4. **Run locally:**
+4. **Run locally with Netlify Dev:**
 ```bash
-npm run dev
+npm install -g netlify-cli
+netlify dev
 ```
 
-The app should now be running at `http://localhost:5173` ✨
+The app should now be running at `http://localhost:8888` ✨
 
 ## 🔐 API Key Management
-- Keys are stored in a `.env` file (ignored by `.gitignore`)
-- For deployment (e.g. Netlify), add your key in the environment variables section
+- API calls are made securely through Netlify Functions
+- Keys are stored in `.env` (and excluded from Git)
+- For deployment (e.g. Netlify), add your key in the **Environment Variables** section of the site settings
 
-## 📁 Folder Structure
+## 🧱 Folder Structure
 ```
-src/
-├── App.jsx          # Main app component
-├── index.css        # Tailwind setup
-└── main.jsx         # Entry point
+/netlify/functions/   # Serverless functions (e.g. getRecipe.js)
+/src/                 # React App
+  ├── App.jsx         # Main app logic
+  └── index.css       # Tailwind setup
+.env                  # Local environment variables
 ```
 
-## 🧠 AI Prompt Logic
-The app dynamically generates prompts based on:
-- The user's ingredient input
-- Meal type (optional)
-- Whether it's a new or alternative recipe request
-- Follow-up questions sent to ChefBot include the recipe context
+## 🚧 Rate Limiting
+To protect API usage, each IP address is limited to **5 requests per minute** via in-memory tracking inside the Netlify Function.
+
+## 💡 Prompt Logic
+- Includes selected meal type in the prompt
+- Adapts based on whether it's an alternative request
+- Follow-up questions to ChefBot include recipe context
 
 ## 🤝 Contributing
-Pull requests and forks are welcome!
+Pull requests and forks are welcome! To contribute:
+- Fork the repo
+- Create a branch
+- Make changes
+- Open a PR for review
+
+## 👀 Visibility & Permissions
+This is a **public repository**:
+- ✅ Anyone can **view or clone** the code
+- ❌ Only **collaborators can push** or merge changes
+
+If you'd like to contribute, please open a pull request.
 
 ## 📄 License
 MIT
@@ -71,4 +88,3 @@ MIT
 ---
 
 > Built with ❤️ and curiosity to make cooking easier for everyone.
-
