@@ -5,16 +5,16 @@ function App() {
   const [mealType, setMealType] = useState("any");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
-  const [recentInputs, setRecentInputs] = useState([]);
   const [alternativeMode, setAlternativeMode] = useState(false);
+  const [recentInputs, setRecentInputs] = useState([]);
   const [chatHistory, setChatHistory] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
-    const sessionHistory = sessionStorage.getItem("recentInputs");
-    if (sessionHistory) {
-      setRecentInputs(JSON.parse(sessionHistory));
+    const stored = sessionStorage.getItem("recentInputs");
+    if (stored) {
+      setRecentInputs(JSON.parse(stored));
     }
   }, []);
 
@@ -31,7 +31,7 @@ function App() {
     saveRecentInput(ingredients);
 
     try {
-      const res = await fetch("/.netlify/functions/getRecipe", {
+      const res = await fetch("http://localhost:5000/api/recipe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -63,24 +63,21 @@ function App() {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    const userMessage = chatInput.trim();
+    const userMsg = chatInput.trim();
     setChatInput("");
     setChatLoading(true);
 
-    const updatedChat = [...chatHistory, { sender: "You", text: userMessage }];
+    const updatedChat = [...chatHistory, { sender: "You", text: userMsg }];
 
     try {
-      const res = await fetch("/.netlify/functions/getRecipe", {
+      const res = await fetch("http://localhost:5000/api/recipe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          ingredients,
-          mealType,
-          alternativeMode,
-          followUp: userMessage,
-          result // include previous recipe result for better context
+          followUp: userMsg,
+          result
         })
       });
 

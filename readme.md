@@ -1,90 +1,104 @@
 # 🍳 What Can I Cook?
 
-A simple AI-powered web app built with React + Vite that helps users discover recipes based on the ingredients they already have at home.
+**A smart recipe suggestion app** that takes your available ingredients and meal type, then uses AI to suggest step-by-step recipes. Built with **React + Vite** and powered by **Cohere AI** via an **Express backend**.
 
-## 🔍 Features
+---
 
-- 🧠 Uses Cohere's AI model to generate step-by-step recipes
-- 🕹️ Meal type selector: Breakfast, Lunch, Dinner, or Any
-- 📌 Recent input history (last 5 entries stored per session)
-- 💬 Chatbot assistant ("ChefBot") to ask follow-up cooking questions
-- 🌐 Clean and responsive TailwindCSS UI
-- 🔒 Secure backend using Netlify Functions with basic rate limiting
+## 🚀 Features
 
-## 🚀 Live Demo
-Coming soon (after Netlify deployment)
+- ✅ Input ingredients and get 2–3 recipe suggestions with steps
+- 🍽️ Meal type selector: breakfast, lunch, dinner, or any
+- 🔁 Alternative recipe suggestions
+- 💬 Chatbox to ask follow-up questions about recipes
+- 🧠 Smart prompt generation with conversational context
+- 💾 Recent inputs (stored per session)
+
+---
 
 ## 🛠️ Tech Stack
-- React (with Vite)
-- TailwindCSS
-- Netlify Functions
-- Cohere API
+
+- **Frontend:** React (Vite), TailwindCSS
+- **Backend:** Express.js
+- **AI API:** Cohere (text generation)
+
+---
 
 ## 📦 Setup Instructions
 
-1. **Clone the repo:**
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/what-can-i-cook.git
+git clone https://github.com/your-username/what-can-i-cook.git
 cd what-can-i-cook
 ```
 
-2. **Install dependencies:**
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-3. **Create `.env` file in the root:**
+### 3. Setup Environment Variables
+Create a `.env` file in the **root** of your project:
 ```env
-COHERE_API_KEY=your_cohere_api_key_here
+COHERE_API_KEY=your_actual_api_key_here
 ```
 
-4. **Run locally with Netlify Dev:**
+### 4. Start the App (Frontend + Backend)
+Use this to start both React and Express servers at once:
 ```bash
-npm install -g netlify-cli
-netlify dev
+npm run dev
 ```
 
-The app should now be running at `http://localhost:8888` ✨
-
-## 🔐 API Key Management
-- API calls are made securely through Netlify Functions
-- Keys are stored in `.env` (and excluded from Git)
-- For deployment (e.g. Netlify), add your key in the **Environment Variables** section of the site settings
-
-## 🧱 Folder Structure
+> Make sure `nodemon` is installed globally if you get a `nodemon not found` error:
+```bash
+npm install -g nodemon
 ```
-/netlify/functions/   # Serverless functions (e.g. getRecipe.js)
-/src/                 # React App
-  ├── App.jsx         # Main app logic
-  └── index.css       # Tailwind setup
-.env                  # Local environment variables
-```
-
-## 🚧 Rate Limiting
-To protect API usage, each IP address is limited to **5 requests per minute** via in-memory tracking inside the Netlify Function.
-
-## 💡 Prompt Logic
-- Includes selected meal type in the prompt
-- Adapts based on whether it's an alternative request
-- Follow-up questions to ChefBot include recipe context
-
-## 🤝 Contributing
-Pull requests and forks are welcome! To contribute:
-- Fork the repo
-- Create a branch
-- Make changes
-- Open a PR for review
-
-## 👀 Visibility & Permissions
-This is a **public repository**:
-- ✅ Anyone can **view or clone** the code
-- ❌ Only **collaborators can push** or merge changes
-
-If you'd like to contribute, please open a pull request.
-
-## 📄 License
-MIT
 
 ---
 
-> Built with ❤️ and curiosity to make cooking easier for everyone.
+## 📁 Folder Structure
+```plaintext
+what-can-i-cook/
+├── public/
+├── src/
+│   └── App.jsx
+├── server/
+│   └── index.js        ← Express backend
+├── .env                ← API key goes here 
+├── .gitignore
+├── package.json
+├── vite.config.js
+└── README.md
+```
+
+---
+
+## 🔐 API Security
+
+- Your **API key is hidden** using a backend Express server
+- The server implements **basic rate limiting**: max 6 requests per IP per minute
+
+---
+
+## ✅ Deployment Options
+
+### Local
+- Run: `npm run dev`
+- Access app on `http://localhost:5173`
+
+---
+
+## 🧠 Demo Prompts
+
+### English:
+```txt
+bread, avocado, feta cheese, lemon
+eggs, tomato, cheese
+```
+
+### Follow-Up:
+```txt
+Can I replace feta with cheddar?
+What sides go best with the second recipe?
+```
+
+
