@@ -5,16 +5,16 @@ function App() {
   const [mealType, setMealType] = useState("any");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
-  const [alternativeMode, setAlternativeMode] = useState(false);
   const [recentInputs, setRecentInputs] = useState([]);
+  const [alternativeMode, setAlternativeMode] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("recentInputs");
-    if (stored) {
-      setRecentInputs(JSON.parse(stored));
+    const sessionHistory = sessionStorage.getItem("recentInputs");
+    if (sessionHistory) {
+      setRecentInputs(JSON.parse(sessionHistory));
     }
   }, []);
 
@@ -24,6 +24,19 @@ function App() {
     sessionStorage.setItem("recentInputs", JSON.stringify(updated));
   };
 
+  const getPrompt = () => {
+    const mealPrefix =
+      mealType !== "any"
+        ? `These are my ${mealType} ingredients: `
+        : "I have these ingredients: ";
+
+    const basePrompt = alternativeMode
+      ? "Please now suggest 2-3 completely different and unique dishes. Do not repeat or rephrase anything from earlier. Include step-by-step instructions for each."
+      : "What 2-3 unique dishes can I make with them? Please include step-by-step instructions for each.";
+
+    return `${mealPrefix}${ingredients}. ${basePrompt}`;
+  };
+
   const fetchRecipes = async () => {
     setLoading(true);
     setResult("");
@@ -31,16 +44,23 @@ function App() {
     saveRecentInput(ingredients);
 
     try {
-      const res = await fetch("http://localhost:5000/api/recipe", {
+      const res = await fetch("https://api.cohere.ai/v1/generate", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_COHERE_API_KEY}`,
         },
-        body: JSON.stringify({ ingredients, mealType, alternativeMode })
+        body: JSON.stringify({
+          model: "command",
+          prompt: getPrompt(),
+          max_tokens: 1000,
+          temperature: 0.7,
+          p: 0.8,
+        }),
       });
 
       const data = await res.json();
-      setResult(data.text || "No recipes found.");
+      setResult(data.generations?.[0]?.text || "No recipes found.");
     } catch (err) {
       setResult("Something went wrong: " + err.message);
     }
@@ -63,26 +83,30 @@ function App() {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    const userMsg = chatInput.trim();
+    const userMessage = chatInput.trim();
     setChatInput("");
     setChatLoading(true);
 
-    const updatedChat = [...chatHistory, { sender: "You", text: userMsg }];
+    const updatedChat = [...chatHistory, { sender: "You", text: userMessage }];
 
     try {
-      const res = await fetch("http://localhost:5000/api/recipe", {
+      const res = await fetch("https://api.cohere.ai/v1/generate", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_COHERE_API_KEY}`,
         },
         body: JSON.stringify({
-          followUp: userMsg,
-          result
-        })
+          model: "command",
+          prompt: `The user previously received this recipe:\n"${result}"\n\nFollow-up question: "${userMessage}"\n\nAnswer as a helpful cooking assistant.`,
+          max_tokens: 800,
+          temperature: 0.7,
+          p: 0.8,
+        }),
       });
 
       const data = await res.json();
-      const reply = data.text?.trim() || "Sorry, I couldn't answer that.";
+      const reply = data.generations?.[0]?.text?.trim() || "Sorry, I couldn't answer that.";
       updatedChat.push({ sender: "ChefBot", text: reply });
     } catch (err) {
       updatedChat.push({ sender: "ChefBot", text: "Something went wrong: " + err.message });
