@@ -9,6 +9,7 @@
   "dependencies": {
     "@azure-rest/ai-inference": "^1.0.0-beta.6",
     "@azure/core-auth": "^1.9.0",
+    "lucide-react": "^0.488.0",
     "openai": "^4.94.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
